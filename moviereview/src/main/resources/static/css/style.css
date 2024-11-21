@@ -1,0 +1,124 @@
+body {
+    background-color: #f4f4f9;
+    background-image: url('https://www.transparenttextures.com/patterns/light-paper.png'); /* Subtle texture */
+}
+
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+h1 {
+    font-family: 'Arial', sans-serif;
+    font-weight: 700;
+}
+
+#movie-list .card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 10px;
+    overflow: hidden; /* Prevent content overflow */
+}
+
+#movie-list .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.card-img-top {
+    height: 300px; /* Fixed height for images */
+    object-fit: cover; /* Maintain aspect ratio */
+    border-radius: 10px 10px 0 0; /* Rounded corners for the top */
+}
+
+.modal-body img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background-color: #343a40;
+    color: white;
+}
+
+.modal-title {
+    font-weight: bold;
+}
+
+h5 {
+    color: #007bff; /* Bootstrap primary color */
+}
+
+.form-group input,
+.form-group textarea {
+    border-radius: 5px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.review-rating {
+    display: flex;
+    align-items: center;
+}
+
+.star {
+    color: gold;
+    margin-right: 5px;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --primary-color: #007bff;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.card {
+    background-color: #f8f9fa; /* Light background for cards */
+}
+
+.card-title, .card-text {
+    color: var(--text-color);
+}
+
+.dark-mode {
+    --background-color: #121212;
+    --text-color: #ffffff;
+}
+
+.dark-mode .card {
+    background-color: #1e1e1e; /* Dark background for cards */
+}
+
+#darkModeToggle {
+    display: flex;
+    align-items: center;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+#darkModeToggle i {
+    font-size: 1.5rem;
+    transition: opacity 0.3s ease;
+}
+
+#darkModeToggle .d-none {
+    display: none;
+}
