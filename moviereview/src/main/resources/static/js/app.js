@@ -161,3 +161,157 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// YouTube API Configuration
+const YOUTUBE_API_KEY = 'AIzaSyCEvxsyhtiozAdkZac4T_6kHbg21lOKgXU'; // Replace with your actual API key
+
+// Load YouTube API
+function loadYouTubeAPI() {
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+
+// Initialize when document is ready
+$(document).ready(function() {
+    loadYouTubeAPI();
+});
+
+let player;
+let currentTrailerID = null;
+
+// Function to initialize YouTube player
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('youtube-player', {
+        height: '100%',
+        width: '100%',
+        videoId: '',
+        playerVars: {
+            'autoplay': 0,
+            'controls': 1,
+            'rel': 0,
+            'modestbranding': 1,
+            'fs': 1
+        },
+        events: {
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
+        }
+    });
+}
+
+// Handle player state changes
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+        resetTrailerView();
+    }
+}
+
+// Handle player errors
+function onPlayerError(event) {
+    console.error('YouTube Player Error:', event.data);
+    resetTrailerView();
+    showTrailerError();
+}
+
+// Reset trailer view
+function resetTrailerView() {
+    $('#youtube-player').hide();
+    $('#trailer-placeholder').show();
+}
+
+// Show trailer error message
+function showTrailerError() {
+    $('#trailer-placeholder').html(`
+        <div class="trailer-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>Sorry, the trailer is currently unavailable.</p>
+            <button class="btn btn-outline-danger mt-2" onclick="resetTrailerPlaceholder()">
+                Try Again
+            </button>
+        </div>
+    `);
+}
+
+// Reset trailer placeholder to original state
+function resetTrailerPlaceholder() {
+    $('#trailer-placeholder').html(`
+        <button id="watch-trailer" class="btn btn-danger">
+            <i class="fas fa-play-circle"></i> Watch Trailer
+        </button>
+    `);
+}
+
+// Function to load and play trailer
+async function loadTrailer(movieTitle) {
+    try {
+        const searchQuery = `${movieTitle} official trailer`;
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchQuery)}&type=video&maxResults=1&key=${YOUTUBE_API_KEY}`;
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('YouTube API request failed');
+        }
+
+        const data = await response.json();
+
+        if (data.items && data.items.length > 0) {
+            currentTrailerID = data.items[0].id.videoId;
+            return currentTrailerID;
+        }
+        return null;
+    } catch (error) {
+        console.error('Error loading trailer:', error);
+        return null;
+    }
+}
+
+// Add click handler for watch trailer button
+$(document).on('click', '#watch-trailer', async function() {
+    const movieTitle = $('#movieModalLabel').text();
+    $('#trailer-placeholder').html(`
+        <div class="spinner-border text-danger" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    `);
+
+    const trailerID = await loadTrailer(movieTitle);
+
+    if (trailerID) {
+        $('#trailer-placeholder').hide();
+        $('#youtube-player').show();
+        player.loadVideoById(trailerID);
+    } else {
+        showTrailerError();
+    }
+});
+
+// Handle modal close
+$('#movieModal').on('hidden.bs.modal', function () {
+    if (player) {
+        player.stopVideo();
+    }
+    resetTrailerView();
+    resetTrailerPlaceholder();
+});
+
+// Add this CSS for error handling
+const style = document.createElement('style');
+style.textContent = `
+    .trailer-error {
+        text-align: center;
+        color: #dc3545;
+        padding: 2rem;
+    }
+
+    .trailer-error i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .trailer-error p {
+        margin-bottom: 0.5rem;
+    }
+`;
+document.head.appendChild(style);
